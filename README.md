@@ -20,7 +20,7 @@ This writes a static snapshot into `html_output/`:
 ```bash
 export RPC_URL="https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY"
 
-forge test --match-test testRenderMainnetToFile -vvv --gas-limit 10000000000000
+forge test --match-test testRenderMainnetToFile -vvv --gas-limit 10000000000000 --memory-limit 500000000000000
 ```
 
 ## View locally
