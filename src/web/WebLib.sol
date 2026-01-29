@@ -138,35 +138,4 @@ library WebLib {
         }
         return index;
     }
-
-    function escapeHtml(string memory s) internal pure returns (string memory) {
-        bytes memory b = bytes(s);
-        bytes memory out = new bytes(b.length * 6);
-        uint256 o;
-        for (uint256 i = 0; i < b.length; i++) {
-            if (b[i] == "<") {
-                out[o++] = "&";
-                out[o++] = "l";
-                out[o++] = "t";
-                out[o++] = ";";
-            } else if (b[i] == ">") {
-                out[o++] = "&";
-                out[o++] = "g";
-                out[o++] = "t";
-                out[o++] = ";";
-            } else if (b[i] == "&") {
-                out[o++] = "&";
-                out[o++] = "a";
-                out[o++] = "m";
-                out[o++] = "p";
-                out[o++] = ";";
-            } else {
-                out[o++] = b[i];
-            }
-        }
-        assembly {
-            mstore(out, o)
-        }
-        return string(out);
-    }
 }

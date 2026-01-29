@@ -54,7 +54,7 @@ library MediaPage {
                 '<script type="text/plain" id="mimeUrlData">',
                 mimeUrl,
                 '</script><script type="text/plain" id="titleData">',
-                WebLib.escapeHtml(title),
+                title.escapeHTML(),
                 "</script><script>",
                 _mediaScript(index),
                 "</script></body></html>"
