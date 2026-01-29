@@ -13,6 +13,7 @@ library Layout {
         html_ = string.concat(html_, '<meta name="viewport" content="width=device-width, initial-scale=1.0">');
         html_ = string.concat(html_, "<title>", title, "</title>");
         html_ = string.concat(html_, '<meta name="description" content="', description, '">');
+        html_ = string.concat(html_, '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS4yNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNyAxMiBMNyAyOCBMMjUgMjggTDI1IDEyIFogTTcgMTIgTDE2IDQgTDI1IDEyIEwxNiAyMiBaIE0xNiA0IEwxNiAyMiBMMTYgMjggTTE2IDIyIEw3IDI4IE0xNiAyMiBMMjUgMjgiLz48L3N2Zz4=">');
 
         string
             memory css = ":root{--bg:#ffffff;--fg:#111111;--font-display:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;}";
