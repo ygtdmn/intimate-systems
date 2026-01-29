@@ -37,7 +37,9 @@ library MediaPage {
         string memory title
     ) internal pure returns (string memory) {
         string memory css = "html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent}"
-            "body{display:block}img,video{width:100%;height:100%;object-fit:contain;object-position:left top;display:block}"
+            "body{display:block}img{width:100%;height:100%;object-fit:contain;object-position:left top;display:block}"
+            "video{width:100%;height:100%;object-fit:contain;object-position:left top;display:block}"
+            "body.video-fit video{max-width:100%;max-height:100%;width:auto;height:auto}"
             "iframe{border:0;width:100%;height:100%;display:block;overflow:hidden}";
 
         // Embed only the small data (mimeUrl, title, index) - tokenUri is fetched via /token-uri endpoint
@@ -97,18 +99,18 @@ library MediaPage {
             "h=h.includes('<head>')?h.replace('<head>','<head>'+r):h.includes('<html>')?h.replace('<html>','<html><head>'+r+'</head>'):r+h;"
             "return'data:text/html;base64,'+c(h)}"
             "function g(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;')}"
-            "function h(u,t){if(!u)return'';"
+            "function h(u,t){if(!u)return{html:'',isVideo:false};"
             "if(u.startsWith('data:video/')||u.endsWith('.mp4')||u.endsWith('.webm')||u.endsWith('.mov'))"
-            "return'<video src=\"'+u+'\" loop muted autoplay playsinline class=\"token-media\" style=\"cursor:pointer\"></video>';"
+            "return{html:'<video src=\"'+u+'\" loop muted autoplay playsinline class=\"token-media\" style=\"cursor:pointer\"></video>',isVideo:true};"
             "if(u.startsWith('data:text/html')||u.endsWith('.html')||u.endsWith('.htm'))"
-            "return'<iframe src=\"'+f(u)+'\" class=\"token-media token-iframe\" sandbox=\"allow-scripts\"></iframe>';"
-            "return'<img src=\"'+u+'\" alt=\"'+g(t||'')+'\" class=\"token-media\">'}"
+            "return{html:'<iframe src=\"'+f(u)+'\" class=\"token-media token-iframe\" sandbox=\"allow-scripts\"></iframe>',isVideo:false};"
+            "return{html:'<img src=\"'+u+'\" alt=\"'+g(t||'')+'\" class=\"token-media\">',isVideo:false}}"
             "function i(){document.querySelectorAll('video.token-media').forEach(function(v){v.onclick=function(){v.muted=!v.muted}})}"
             "function render(tokenUri){"
-            "var m='';"
-            "if(mimeUrl)m=h(mimeUrl,title);"
-            "else if(tokenUri){const{image,animation}=d(tokenUri);m=animation?h(animation,title):image?h(image,title):''}"
-            "document.body.innerHTML=m;i()}"
+            "var r={html:'',isVideo:false};"
+            "if(mimeUrl)r=h(mimeUrl,title);"
+            "else if(tokenUri){const{image,animation}=d(tokenUri);r=animation?h(animation,title):image?h(image,title):{html:'',isVideo:false}}"
+            "if(r.isVideo)document.body.classList.add('video-fit');document.body.innerHTML=r.html;i()}"
             "if(mimeUrl){render('')}else{"
             "fetch(tokenUriUrl).then(r=>r.text()).then(render).catch(()=>render(''))}"
             "})();"
