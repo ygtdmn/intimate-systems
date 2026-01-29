@@ -36,6 +36,10 @@ contract WebRenderer is IWeb {
         return MediaPage.html(show, i);
     }
 
+    function tokenUri(uint256 i) public view returns (string memory) {
+        return MediaPage.tokenUri(show, i);
+    }
+
     function resolveMode() external pure returns (bytes32) {
         return "5219";
     }
@@ -76,6 +80,22 @@ contract WebRenderer is IWeb {
             headers = new KeyValue[](1);
             headers[0].key = "Content-Type";
             headers[0].value = "text/html; charset=utf-8";
+            return (statusCode, body, headers);
+        } else if (
+            resource.length == 2 &&
+            keccak256(abi.encodePacked(resource[0])) == keccak256(abi.encodePacked("token-uri"))
+        ) {
+            uint256 i = JSONParserLib.parseUint(resource[1]);
+            Sculpture[] memory sculptures = ContractShow(show).getSculptures();
+            if (i >= sculptures.length) {
+                statusCode = 404;
+                return (statusCode, body, headers);
+            }
+            body = tokenUri(i);
+            statusCode = 200;
+            headers = new KeyValue[](1);
+            headers[0].key = "Content-Type";
+            headers[0].value = "text/plain; charset=utf-8";
             return (statusCode, body, headers);
         }
         statusCode = 404;

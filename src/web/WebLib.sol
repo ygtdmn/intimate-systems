@@ -7,13 +7,9 @@ import { ContractShow } from "../ContractShow.sol";
 import { Mod } from "../Mod.sol";
 import { IERC721Metadata } from "../lib/IERC721Metadata.sol";
 import { LibString } from "solady/utils/LibString.sol";
-import { Base64 } from "solady/utils/Base64.sol";
-import { JSONParserLib } from "solady/utils/JSONParserLib.sol";
 
 library WebLib {
     using LibString for string;
-    using JSONParserLib for JSONParserLib.Item;
-    using JSONParserLib for string;
 
     function sortSculpturesByAuthor(Sculpture[] memory sculptures) internal view returns (Sculpture[] memory) {
         Sculpture[] memory sorted = new Sculpture[](sculptures.length);
@@ -89,59 +85,6 @@ library WebLib {
         return string(out);
     }
 
-    function parseJson(string memory json) internal pure returns (string memory image, string memory animation) {
-        image = jsonValue(json, "image");
-        if (bytes(image).length == 0) {
-            image = jsonValue(json, "image_url");
-        }
-        animation = jsonValue(json, "animation_url");
-    }
-
-    function jsonValue(string memory json, string memory key) internal pure returns (string memory) {
-        JSONParserLib.Item memory root = json.parse();
-        string memory quotedKey = string.concat('"', key, '"');
-        JSONParserLib.Item memory item = root.at(quotedKey);
-        if (item.isUndefined()) {
-            return "";
-        }
-        if (item.isString()) {
-            return item.value().decodeString();
-        }
-        return item.value();
-    }
-
-    function renderMediaFromUrl(
-        string memory url,
-        string memory title
-    ) internal pure returns (string memory _html, string memory artworkUrl) {
-        if (url.startsWith("data:video/") || url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".mov")) {
-            _html = string.concat(
-                '<video src="',
-                url,
-                '" controls loop muted playsinline class="token-media"></video>'
-            );
-            return (_html, url);
-        }
-        if (url.startsWith("data:text/html") || url.endsWith(".html") || url.endsWith(".htm")) {
-            string memory iframeSrc = injectStyleReset(url);
-            _html = string.concat(
-                '<iframe src="',
-                iframeSrc,
-                '" class="token-media token-iframe" sandbox="allow-scripts"></iframe>'
-            );
-            return (_html, url);
-        }
-        return renderImage(url, title);
-    }
-
-    function renderImage(
-        string memory url,
-        string memory title
-    ) internal pure returns (string memory _html, string memory artworkUrl) {
-        _html = string.concat('<img src="', url, '" alt="', title, '" class="token-media">');
-        return (_html, url);
-    }
-
     function firstMimeUrl(string[] memory urls) internal pure returns (string memory) {
         for (uint256 i = 0; i < urls.length; i++) {
             if (
@@ -153,76 +96,6 @@ library WebLib {
             }
         }
         return "";
-    }
-
-    function injectStyleReset(string memory url) internal pure returns (string memory) {
-        if (!url.startsWith("data:text/html;base64,")) {
-            return url;
-        }
-        string memory base64 = url.slice(22);
-        string memory _html = string(Base64.decode(base64));
-        string
-            memory styleReset = "<style>*{margin:0!important;padding:0!important;box-sizing:border-box!important}html,body{width:100%!important;height:100%!important;background:transparent!important;overflow:hidden!important;justify-content:flex-start!important;align-items:flex-start!important}</style>";
-
-        if (_html.contains("<head>")) {
-            _html = replaceFirst(_html, "<head>", string.concat("<head>", styleReset));
-        } else if (_html.contains("<html>")) {
-            _html = replaceFirst(_html, "<html>", string.concat("<html><head>", styleReset, "</head>"));
-        } else {
-            _html = string.concat(styleReset, _html);
-        }
-
-        return string.concat("data:text/html;base64,", Base64.encode(bytes(_html)));
-    }
-
-    function replaceFirst(
-        string memory str,
-        string memory needle,
-        string memory replacement
-    ) internal pure returns (string memory) {
-        uint256 idx = str.indexOf(needle);
-        if (idx == LibString.NOT_FOUND) {
-            return str;
-        }
-        return string.concat(str.slice(0, idx), replacement, str.slice(idx + bytes(needle).length));
-    }
-
-    function urlDecode(string memory str) internal pure returns (string memory) {
-        bytes memory b = bytes(str);
-        bytes memory out = new bytes(b.length);
-        uint256 o;
-        for (uint256 i = 0; i < b.length; i++) {
-            bytes1 c = b[i];
-            if (c == "%") {
-                if (i + 2 < b.length) {
-                    uint8 hi = _fromHexChar(uint8(b[i + 1]));
-                    uint8 lo = _fromHexChar(uint8(b[i + 2]));
-                    out[o++] = bytes1((hi << 4) | lo);
-                    i += 2;
-                }
-            } else if (c == "+") {
-                out[o++] = " ";
-            } else {
-                out[o++] = c;
-            }
-        }
-        assembly {
-            mstore(out, o)
-        }
-        return string(out);
-    }
-
-    function _fromHexChar(uint8 c) private pure returns (uint8) {
-        if (c >= 48 && c <= 57) {
-            return c - 48;
-        }
-        if (c >= 65 && c <= 70) {
-            return c - 55;
-        }
-        if (c >= 97 && c <= 102) {
-            return c - 87;
-        }
-        return 0;
     }
 
     function sculptureUrls(Sculpture sculpture) internal view returns (string[] memory) {
@@ -245,50 +118,24 @@ library WebLib {
         return title;
     }
 
-    function tokenMediaFor(
-        Sculpture sculpture,
-        address show
-    ) internal view returns (string memory image, string memory animation) {
+    function rawTokenUriFor(Sculpture sculpture, address show) internal view returns (string memory) {
         SculptureERC721 memory sculptureERC721 = ContractShow(show).getSculptureERC721(sculpture);
         if (sculptureERC721.contractAddress != address(0)) {
-            (image, animation) = tokenMediaFrom(sculptureERC721.contractAddress, sculptureERC721.tokenId);
-            if (bytes(image).length > 0 || bytes(animation).length > 0) {
-                return (image, animation);
-            }
+            try IERC721Metadata(sculptureERC721.contractAddress).tokenURI(sculptureERC721.tokenId) returns (string memory uri) {
+                if (bytes(uri).length > 0) return uri;
+            } catch {}
         }
 
         address sculptureAddress = address(sculpture);
-        (image, animation) = tokenMediaFrom(sculptureAddress, 0);
-        if (bytes(image).length > 0 || bytes(animation).length > 0) {
-            return (image, animation);
-        }
+        try IERC721Metadata(sculptureAddress).tokenURI(0) returns (string memory uri) {
+            if (bytes(uri).length > 0) return uri;
+        } catch {}
 
-        return tokenMediaFrom(sculptureAddress, 1);
-    }
+        try IERC721Metadata(sculptureAddress).tokenURI(1) returns (string memory uri) {
+            return uri;
+        } catch {}
 
-    function tokenMediaFrom(
-        address contractAddress,
-        uint256 tokenId
-    ) internal view returns (string memory image, string memory animation) {
-        try IERC721Metadata(contractAddress).tokenURI(tokenId) returns (string memory uri) {
-            return parseTokenUri(uri);
-        } catch {
-            return ("", "");
-        }
-    }
-
-    function parseTokenUri(string memory uri) internal pure returns (string memory image, string memory animation) {
-        if (uri.startsWith("data:application/json;base64,")) {
-            string memory base64 = uri.slice(29);
-            string memory json = string(Base64.decode(base64));
-            return parseJson(json);
-        }
-        if (uri.startsWith("data:application/json,")) {
-            string memory encoded = uri.slice(22);
-            string memory json = urlDecode(encoded);
-            return parseJson(json);
-        }
-        return ("", "");
+        return "";
     }
 
     function authorsTextFor(Sculpture sculpture) internal view returns (string memory) {
@@ -349,7 +196,7 @@ library WebLib {
             string.concat(
                 '<iframe src="/sculpture-media/',
                 LibString.toString(index),
-                '" class="token-media token-iframe" sandbox="allow-scripts" loading="eager" scrolling="no"></iframe>'
+                '" class="token-media token-iframe" sandbox="allow-scripts allow-same-origin" loading="eager" scrolling="no"></iframe>'
             );
     }
 
