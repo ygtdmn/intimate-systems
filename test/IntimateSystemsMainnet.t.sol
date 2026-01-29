@@ -27,7 +27,7 @@ contract IntimateSystemsMainnetTest is Test {
         Sculpture[] memory sculptures = new Sculpture[](9);
         sculptures[0] = Sculpture(0x82752f2626AC2FBF2A8b7781a1c20cbcab2E0196);
         sculptures[1] = Sculpture(0x69B2D2AA0274CB21A3a80c0e53C84de551e97390);
-        sculptures[2] = Sculpture(0x94AfD75DB06A12fd106f02C194835a6dcb47bbEE);
+        sculptures[2] = Sculpture(0x93510d88036b3a128c5f0B4782E13969adE745a1);
         sculptures[3] = Sculpture(0xEc5AB17Cc35221cdF54EaEb0868eA82d4D75D9Bf);
         sculptures[4] = Sculpture(0x22FEA2F6b2154859630011d9A38648171CA0D972);
         sculptures[5] = Sculpture(0x9c3622C8BF55A0350D9cf732211726dFCB67E1C2);
