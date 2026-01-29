@@ -16,7 +16,7 @@ contract WebRendererTest is Test {
 
     function testRequestIndex() public {
         (WebRenderer renderer, Mod data, ) = setup();
-        data.setEtherscanBase("https://example.com/address/");
+        data.setExplorerBase("https://example.com/address/");
 
         string[] memory resource = new string[](0);
         KeyValue[] memory params = new KeyValue[](0);

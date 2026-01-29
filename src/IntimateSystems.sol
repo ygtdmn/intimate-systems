@@ -8,7 +8,7 @@ import { Mod } from "./Mod.sol";
 import { WebRenderer, KeyValue } from "./web/WebRenderer.sol";
 import { LibString } from "solady/utils/LibString.sol";
 
-contract IntimateSystems is ContractShow, Sculpture {
+contract IntimateSystems is ContractShow {
     Sculpture[] public sculptures;
 
     mapping(Sculpture => SculptureERC721) public sculptureERC721s;

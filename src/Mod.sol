@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "solady/utils/SSTORE2.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { SSTORE2 } from "solady/utils/SSTORE2.sol";
 
 contract Mod is Ownable {
     constructor() Ownable(msg.sender) {}
@@ -30,10 +30,10 @@ contract Mod is Ownable {
         return exhibitionUrls;
     }
 
-    string public etherscanBase = "https://etherscan.io/address/";
+    string public explorerBase = "https://etherscan.io/address/";
 
-    function setEtherscanBase(string memory _etherscanBase) public onlyOwner {
-        etherscanBase = _etherscanBase;
+    function setExplorerBase(string memory _explorerBase) public onlyOwner {
+        explorerBase = _explorerBase;
     }
 
     string public curator = "Jonooo";

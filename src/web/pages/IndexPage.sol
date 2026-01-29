@@ -6,187 +6,217 @@ import { WebLib } from "../WebLib.sol";
 import { Sculpture } from "../../Sculpture.sol";
 import { ContractShow } from "../../ContractShow.sol";
 import { Mod } from "../../Mod.sol";
-import { IERC721Metadata } from "../../lib/IERC721Metadata.sol";
 import { LibString } from "solady/utils/LibString.sol";
-import { Base64 } from "solady/utils/Base64.sol";
-import { JSONParserLib } from "solady/utils/JSONParserLib.sol";
 
 library IndexPage {
-    using LibString for string;
     using LibString for address;
     using LibString for uint256;
-    using JSONParserLib for JSONParserLib.Item;
-    using JSONParserLib for string;
 
-    function html(address show, address data) public view returns (string memory) {
-        string memory body = string.concat(
-            _introHtml(show, data),
-            _aboutHtml(data),
-            _worksHtml(show, data),
-            _footerHtml(show, data)
-        );
-        string memory description = Mod(data).description();
-        return Layout.html(body, Sculpture(show).title(), description);
-    }
+    function html(address showAddress, address data) public view returns (string memory) {
+        string memory showAddressStr = showAddress.toHexStringChecksummed();
+        ContractShow show = ContractShow(showAddress);
+        Sculpture[] memory sculptures = show.getSculptures();
+        Mod mod = Mod(data);
 
-    function _introHtml(address show, address data) internal view returns (string memory _html) {
-        Sculpture[] memory sculptures = WebLib.sortSculpturesByAuthor(ContractShow(show).getSculptures());
-        string memory artistList = WebLib.artistsList(sculptures);
-        string memory showAddr = show.toHexStringChecksummed();
-
-        _html = string.concat(
-            '<main class="gallery-flow">',
-            '<section id="intro" class="intro-section">',
-            '<h1 class="intro-title">',
-            Sculpture(show).title(),
+        string memory heading = string.concat(
+            "<h1>",
+            show.title(),
             "</h1>"
-        );
-
-        _html = string.concat(
-            _html,
-            '<p class="intro-subtitle">',
-            "A contract show curated by ",
+            "<p>"
+            "A contract show curated by "
             '<a href="',
-            Mod(data).curatorUrl(),
+            mod.curatorUrl(),
             '" target="_blank" rel="noopener">',
-            Mod(data).curator(),
-            "</a>",
-            " with ",
+            mod.curator(),
+            "</a>"
+            " with "
             '<a href="',
-            Mod(data).superrareUrl(),
+            mod.superrareUrl(),
             '" target="_blank" rel="noopener">',
-            Mod(data).superrare(),
-            "</a>",
+            mod.superrare(),
+            "</a>"
             "</p>"
         );
 
-        _html = string.concat(
-            _html,
-            '<p class="intro-artists">',
-            artistList,
-            "</p>",
-            '<p class="intro-essay"><a href="/essay">Essay by ',
-            Mod(data).essayAuthor(),
-            unicode" →</a></p>",
-            '<p class="intro-thanks">',
-            "<span>Special thanks to</span> ",
+        (string memory navigation, string memory allWorks) = artworks(sculptures, mod.explorerBase());
+
+        string memory thanks = string.concat(
+            "<footer>"
+            "<p>"
+            "Special thanks to "
             '<a href="',
-            Mod(data).thanksUrl(),
+            mod.thanksUrl(),
             '" target="_blank" rel="noopener">',
-            Mod(data).thanks(),
-            "</a>",
-            "<span> et al. for lighting the path with</span> ",
+            mod.thanks(),
+            "</a> "
+            "et al. for lighting the path with "
             '<a href="',
-            Mod(data).thanksShowUrl(),
+            mod.thanksShowUrl(),
             '" target="_blank" rel="noopener">',
-            Mod(data).thanksShow(),
-            "</a>",
+            mod.thanksShow(),
+            "</a>"
             "</p>"
-        );
-
-        _html = string.concat(
-            _html,
-            '<p class="intro-meta">',
-            "<span>December 1, 2025</span>",
+            "<p>"
+            "December 1, 2025 "
             '<a href="',
-            Mod(data).etherscanBase(),
-            showAddr,
+            mod.explorerBase(),
+            showAddressStr,
             '" target="_blank" rel="noopener">',
-            showAddr,
-            "</a>",
+            showAddressStr,
+            "</a>"
+            "</p>"
+            "</footer>"
+        );
+
+        string memory intro = string.concat(
+            '<header id="intro">',
+            heading,
+            "<nav>",
+            navigation,
+            "</nav>"
+            "<p>"
+            '<a href="essay">Essay by ',
+            mod.essayAuthor(),
+            unicode" →</a>",
             "</p>",
-            "</section>"
+            thanks,
+            "</header>"
         );
+
+        string memory about = string.concat('<article id="about">', mod.text(), "</article>");
+
+        string memory works = string.concat('<section id="works">', allWorks, "</section>");
+
+        string memory body = string.concat(intro, "<main>", about, works, "</main>");
+
+        string memory pageCss = "body{max-width:780px;margin:0 auto 14em;padding:0.75em}"
+        "article footer{display:inline-flex;flex-direction:column;gap:1em}"
+        "#intro,#about{min-height:100vh;display:flex;flex-direction:column;justify-content:center}"
+        "#intro nav{margin:2.5em 0}"
+        "#intro footer{margin-top:1em}"
+        "#intro footer > :last-child{font-size:0.8em;margin-top:1em;opacity:0.7}"
+        '#intro footer > :last-child a:before{content:"";display:block}'
+        "#works>article{padding-top:2em;}"
+        "#works>article+article{margin-top:14em;}"
+        "#works footer{margin-top:4em;font-size:0.8em}"
+        '#works footer a:before{content:"";display:block}'
+        "iframe{margin:4em auto}";
+
+        return Layout.html(body, show.title(), mod.description(), pageCss);
     }
 
-    function _aboutHtml(address data) internal view returns (string memory _html) {
-        _html = string.concat(
-            '<section id="about" class="about-section">',
-            '<div class="about-content">',
-            Mod(data).text(),
-            "</div>",
-            "</section>"
-        );
+    function artworks(
+        Sculpture[] memory sculptures,
+        string memory explorerBaseUrl
+    ) public view returns (string memory navigation, string memory works) {
+        for (uint256 i; i < sculptures.length; i++) {
+            Sculpture sculpture = sculptures[i];
+            string memory artist;
+            string memory slug;
+
+            try sculpture.authors() returns (string[] memory authors) {
+                if (authors.length > 0 && bytes(authors[0]).length > 0) {
+                    artist = authors[0];
+                    slug = WebLib.slugify(artist);
+                    navigation = string.concat(
+                        navigation,
+                        (i > 0 ? ", " : ""),
+                        '<a href="#',
+                        slug,
+                        '">',
+                        artist,
+                        "</a>"
+                    );
+                }
+            } catch {}
+
+            works = string.concat(
+                works,
+                '<article id="',
+                slug,
+                '">'
+                "<header>",
+                artist,
+                "<h2>",
+                sculpture.title(),
+                "</h2>"
+                "</header>",
+                _renderMedia(i),
+                WebLib.formatText(sculpture.text()),
+                "<footer>",
+                _renderLinks(sculpture),
+                "<div>",
+                _renderAddresses(sculpture, explorerBaseUrl),
+                "</div>",
+                "</footer>"
+                "</article>"
+            );
+        }
     }
 
-    function _worksHtml(address show, address data) internal view returns (string memory _html) {
-        Sculpture[] memory sculptures = WebLib.sortSculpturesByAuthor(ContractShow(show).getSculptures());
-        _html = string.concat(
-            '<section id="works" class="works-section">',
-            '<div id="sculptures" class="sculptures-container">'
-        );
+    function _renderMedia(uint256 index) internal pure returns (string memory) {
+        return
+            string.concat(
+                '<iframe src="/sculpture-media/',
+                LibString.toString(index),
+                '" sandbox="allow-scripts allow-same-origin" loading="eager" scrolling="no"',
+                index == 4 ? ' style="aspect-ratio: 1248/832;"' : "", // custom aspect ratio for Nahiko's Pond
+                ">"
+                "</iframe>"
+            );
+    }
 
-        for (uint256 i = 0; i < sculptures.length; i++) {
-            _html = _html.concat(_sculptureHtml(sculptures[i], i, data));
+    function _renderLinks(Sculpture sculpture) internal view returns (string memory) {
+        return WebLib.linksHtmlFor(sculpture, WebLib.firstMimeUrl(sculpture));
+    }
+
+    function _renderAddresses(
+        Sculpture sculpture,
+        string memory explorerBaseUrl
+    ) internal view returns (string memory) {
+        address[] memory addresses;
+        try sculpture.addresses() returns (address[] memory returned) {
+            addresses = returned;
+        } catch {
+            addresses = new address[](0);
         }
 
-        _html = string.concat(_html, "</div>", "</section>");
-    }
+        address[] memory all = new address[](addresses.length + 1);
+        all[0] = address(sculpture);
+        for (uint256 i = 0; i < addresses.length; i++) {
+            all[i + 1] = addresses[i];
+        }
 
-    function _sculptureHtml(
-        Sculpture sculpture,
-        uint256 index,
-        address data
-    ) internal view returns (string memory _html) {
-        string memory authorsText = WebLib.authorsTextFor(sculpture);
-        string memory title = WebLib.titleFor(sculpture);
-        string memory text = WebLib.formatText(WebLib.textFor(sculpture));
-        string[] memory urls = WebLib.sculptureUrls(sculpture);
-        string memory artworkUrl = WebLib.firstMimeUrl(urls);
-        string memory mediaHtml = WebLib.mediaIframe(index);
-        string memory linksHtml = WebLib.linksHtmlFor(urls, artworkUrl);
-        string memory addressesHtml = WebLib.addressesFor(sculpture, data);
+        address[] memory unique = new address[](all.length);
+        uint256 count;
+        for (uint256 i = 0; i < all.length; i++) {
+            if (all[i] == address(0)) continue;
+            bool exists;
+            for (uint256 j = 0; j < count; j++) {
+                if (unique[j] == all[i]) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                unique[count] = all[i];
+                count++;
+            }
+        }
 
-        _html = string.concat(
-            '<article class="sculpture" id="',
-            WebLib.slugify(WebLib.primaryAuthor(sculpture)),
-            '">',
-            '<div class="sculpture-header">',
-            '<div class="sculpture-authors">',
-            authorsText,
-            "</div>",
-            '<h2 class="sculpture-title">',
-            title,
-            "</h2>",
-            "</div>",
-            '<div class="sculpture-media">',
-            mediaHtml,
-            "</div>",
-            '<div class="sculpture-text">'
-        );
-
-        _html = string.concat(
-            _html,
-            text,
-            linksHtml,
-            '<div class="sculpture-footer">',
-            addressesHtml,
-            "</div>",
-            "</div>",
-            "</article>"
-        );
-    }
-
-    function _footerHtml(address show, address data) internal view returns (string memory _html) {
-        string memory showAddr = show.toHexStringChecksummed();
-        _html = string.concat(
-            '<footer class="footer-section">',
-            '<div class="footer-content">',
-            '<div class="project-info">',
-            "<p>Generated in block ",
-            block.number.toString(),
-            " from ",
-            '<a href="',
-            Mod(data).etherscanBase(),
-            showAddr,
-            '" target="_blank" rel="noopener">',
-            showAddr,
-            "</a>",
-            "</p>",
-            "</div>",
-            "</div>",
-            "</footer>",
-            "</main>"
-        );
+        string memory _html;
+        for (uint256 i = 0; i < count; i++) {
+            string memory addr = unique[i].toHexStringChecksummed();
+            _html = string.concat(
+                _html,
+                '<a href="',
+                explorerBaseUrl,
+                addr,
+                '" target="_blank" rel="noopener">',
+                addr,
+                "</a>"
+            );
+        }
+        return _html;
     }
 }

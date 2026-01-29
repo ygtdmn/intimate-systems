@@ -47,11 +47,11 @@ contract IntimateSystemsMainnetTest is Test {
         sculptureERC721s[8] = SculptureERC721(address(0x00000063266aAAeDD489e4956153855626E44061), 0);
 
         data.setText(
-            '<p class="about-text">Intimate Systems explores the quiet, interior spaces that exist within networks designed for visibility. On-chain art is inherently public and permanent, yet beneath this transparency, subtle gestures, private signals, and traces of human presence persist.</p>'
-            '<p class="about-text">This exhibition highlights works that examine how individuality, perception, and expression survive within structured systems of code, logic, and networks. Artists consider how small, intimate interactions such as a pause, a repeated pattern, or a hidden mark can shape presence and meaning in digital environments.</p>'
-            '<p class="about-text">The works on view engage with systems as material, revealing rhythm, behavior, and nuance through abstraction, participation, and generative logic. Some invite collaboration, while others quietly encode human traces into their architecture. Across these approaches, the exhibition foregrounds presence over sentiment, and structure over illustration.</p>'
-            '<p class="about-text">Following a lineage of artists who translate logic into expression, from Vera Molnar and Manfred Mohr to JODI, Jenny Holzer, and contemporary practitioners like Sarah Friend and Lauren Lee McCarthy, Intimate Systems demonstrates how code and networks can be simultaneously rigorous and resonant.</p>'
-            '<p class="about-text">By tracing the subtle circulation of human signals through visible systems, the exhibition reveals the architectures of thought, reflection, and relation that thrive beneath the surface of digital networks.</p>'
+            "<p>Intimate Systems explores the quiet, interior spaces that exist within networks designed for visibility. On-chain art is inherently public and permanent, yet beneath this transparency, subtle gestures, private signals, and traces of human presence persist.</p>"
+            "<p>This exhibition highlights works that examine how individuality, perception, and expression survive within structured systems of code, logic, and networks. Artists consider how small, intimate interactions such as a pause, a repeated pattern, or a hidden mark can shape presence and meaning in digital environments.</p>"
+            "<p>The works on view engage with systems as material, revealing rhythm, behavior, and nuance through abstraction, participation, and generative logic. Some invite collaboration, while others quietly encode human traces into their architecture. Across these approaches, the exhibition foregrounds presence over sentiment, and structure over illustration.</p>"
+            "<p>Following a lineage of artists who translate logic into expression, from Vera Molnar and Manfred Mohr to JODI, Jenny Holzer, and contemporary practitioners like Sarah Friend and Lauren Lee McCarthy, Intimate Systems demonstrates how code and networks can be simultaneously rigorous and resonant.</p>"
+            "<p>By tracing the subtle circulation of human signals through visible systems, the exhibition reveals the architectures of thought, reflection, and relation that thrive beneath the surface of digital networks.</p>"
         );
 
         IntimateSystems show = new IntimateSystems(
@@ -65,7 +65,9 @@ contract IntimateSystemsMainnetTest is Test {
         vm.createDir("html_output", true);
         vm.createDir("html_output/sculpture-media", true);
         vm.createDir("html_output/token-uri", true);
+        vm.createDir("html_output/essay", true);
         vm.writeFile("html_output/index.html", renderer.html());
+        vm.writeFile("html_output/essay/index.html", renderer.essay());
 
         for (uint256 i = 0; i < sculptures.length; i++) {
             string memory mediaHtml = MediaPage.html(address(show), i);

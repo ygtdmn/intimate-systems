@@ -82,8 +82,7 @@ contract WebRenderer is IWeb {
             headers[0].value = "text/html; charset=utf-8";
             return (statusCode, body, headers);
         } else if (
-            resource.length == 2 &&
-            keccak256(abi.encodePacked(resource[0])) == keccak256(abi.encodePacked("token-uri"))
+            resource.length == 2 && keccak256(abi.encodePacked(resource[0])) == keccak256(abi.encodePacked("token-uri"))
         ) {
             uint256 i = JSONParserLib.parseUint(resource[1]);
             Sculpture[] memory sculptures = ContractShow(show).getSculptures();
