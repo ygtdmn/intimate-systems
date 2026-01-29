@@ -353,6 +353,56 @@ library WebLib {
             );
     }
 
+    function addressesForNew(Sculpture sculpture, string memory exporerBaseUrl) internal view returns (string memory) {
+        address[] memory addresses;
+        try sculpture.addresses() returns (address[] memory returned) {
+            addresses = returned;
+        } catch {
+            addresses = new address[](0);
+        }
+
+        address[] memory all = new address[](addresses.length + 1);
+        all[0] = address(sculpture);
+        for (uint256 i = 0; i < addresses.length; i++) {
+            all[i + 1] = addresses[i];
+        }
+
+        address[] memory unique = new address[](all.length);
+        uint256 count;
+        for (uint256 i = 0; i < all.length; i++) {
+            if (all[i] == address(0)) {
+                continue;
+            }
+            bool exists;
+            for (uint256 j = 0; j < count; j++) {
+                if (unique[j] == all[i]) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                unique[count] = all[i];
+                count++;
+            }
+        }
+
+        string memory _html;
+        for (uint256 i = 0; i < count; i++) {
+            string memory addr = LibString.toHexStringChecksummed(unique[i]);
+            _html = string.concat(
+                _html,
+                '<a href="',
+                exporerBaseUrl,
+                addr,
+                '" target="_blank" rel="noopener" class="sculpture-address">',
+                addr,
+                "</a>"
+            );
+        }
+
+        return _html;
+    }
+
     function addressesFor(Sculpture sculpture, address data) internal view returns (string memory) {
         address[] memory addresses;
         try sculpture.addresses() returns (address[] memory returned) {
@@ -404,6 +454,9 @@ library WebLib {
     }
 
     function artistsList(Sculpture[] memory sculptures) internal view returns (string memory) {
+    }
+
+    function _artistsList(Sculpture[] memory sculptures) internal view returns (string memory) {
         string[] memory authors = new string[](sculptures.length);
         uint256[] memory indices = new uint256[](sculptures.length);
         uint256 count;

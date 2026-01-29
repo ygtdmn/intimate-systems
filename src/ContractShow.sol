@@ -9,3 +9,9 @@ interface ContractShow {
 
     function getSculptureERC721(Sculpture sculpture) external view returns (SculptureERC721 memory);
 }
+
+interface ShowSculptures {
+    function getSculptures() external view returns (Sculpture[] memory);
+
+    function getSculptureERC721(Sculpture sculpture) external view returns (SculptureERC721 memory);
+}

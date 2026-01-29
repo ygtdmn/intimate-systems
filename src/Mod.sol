@@ -4,6 +4,7 @@ pragma solidity >=0.8.30;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "solady/utils/SSTORE2.sol";
 
+// @todo Probably I'd call this something more self explanatory that Mod.
 contract Mod is Ownable {
     constructor() Ownable(msg.sender) {}
 
@@ -30,6 +31,7 @@ contract Mod is Ownable {
         return exhibitionUrls;
     }
 
+    // @todo This should be called explorerBaseUrl
     string public etherscanBase = "https://etherscan.io/address/";
 
     function setEtherscanBase(string memory _etherscanBase) public onlyOwner {
