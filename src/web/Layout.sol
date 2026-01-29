@@ -27,10 +27,14 @@ library Layout {
         );
         css = string.concat(
             css,
-            ".loading{position:fixed;top:0;left:0;width:100%;height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;}"
+            ".loading{position:fixed;top:0;left:0;width:100%;height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;transition:opacity 0.5s ease;}"
         );
-        css = string.concat(css, ".loading.hidden{opacity:0;pointer-events:none;}");
-        css = string.concat(css, ".loading-text{font-style:italic;font-size:1rem;color:var(--fg);}");
+        css = string.concat(css, ".loading.hidden{opacity:0;pointer-events:none;visibility:hidden;}");
+        css = string.concat(css, "@keyframes dotPulse{0%,80%,100%{opacity:0.2}40%{opacity:1}}");
+        css = string.concat(css, ".loading-text{font-size:1.5rem;color:var(--fg);font-family:var(--font-mono);letter-spacing:0.25rem;}");
+        css = string.concat(css, ".loading-text span{animation:dotPulse 1.4s infinite;}");
+        css = string.concat(css, ".loading-text span:nth-child(2){animation-delay:0.2s;}");
+        css = string.concat(css, ".loading-text span:nth-child(3){animation-delay:0.4s;}");
         css = string.concat(css, ".gallery-flow{width:100%;max-width:1200px;margin:0 auto;position:relative;}");
         css = string.concat(
             css,
@@ -152,7 +156,49 @@ library Layout {
 
         html_ = string.concat(html_, "<style>", css, "</style>");
         html_ = string.concat(html_, "</head>");
-        html_ = string.concat(html_, "<body>", body, "</body></html>");
+        html_ = string.concat(
+            html_,
+            '<body><div class="loading" id="loading"><span class="loading-text"><span>.</span><span>.</span><span>.</span></span></div>',
+            body,
+            _loadingScript(),
+            "</body></html>"
+        );
         return html_;
+    }
+
+    function _loadingScript() internal pure returns (string memory) {
+        return "<script>"
+            "(function(){"
+            "var loading=document.getElementById('loading');"
+            "var iframes=document.querySelectorAll('iframe.token-media');"
+            "var total=iframes.length;"
+            "var loadedCount=0;"
+            "function hideLoading(){loading.classList.add('hidden');}"
+            "function checkAllLoaded(){loadedCount++;if(loadedCount>=total){setTimeout(hideLoading,300);}}"
+            "function waitForMedia(doc){"
+            "return new Promise(function(resolve){"
+            "var imgs=doc.querySelectorAll('img');"
+            "var vids=doc.querySelectorAll('video');"
+            "var innerIframes=doc.querySelectorAll('iframe');"
+            "var mediaCount=imgs.length+vids.length+innerIframes.length;"
+            "if(mediaCount===0){resolve();return;}"
+            "var mediaLoaded=0;"
+            "function onMediaLoad(){mediaLoaded++;if(mediaLoaded>=mediaCount)resolve();}"
+            "imgs.forEach(function(img){if(img.complete)onMediaLoad();else{img.onload=onMediaLoad;img.onerror=onMediaLoad;}});"
+            "vids.forEach(function(vid){if(vid.readyState>=3)onMediaLoad();else{vid.onloadeddata=onMediaLoad;vid.onerror=onMediaLoad;}});"
+            "innerIframes.forEach(function(f){f.onload=onMediaLoad;});"
+            "setTimeout(resolve,15000);"
+            "});"
+            "}"
+            "if(total===0){hideLoading();return;}"
+            "iframes.forEach(function(iframe){"
+            "iframe.addEventListener('load',function(){"
+            "try{var doc=iframe.contentDocument||iframe.contentWindow.document;"
+            "waitForMedia(doc).then(checkAllLoaded);}catch(e){checkAllLoaded();}"
+            "});"
+            "});"
+            "setTimeout(hideLoading,45000);"
+            "})();"
+            "</script>";
     }
 }
