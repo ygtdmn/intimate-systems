@@ -38,7 +38,7 @@ library Layout {
         css = string.concat(css, ".gallery-flow{width:100%;max-width:1200px;margin:0 auto;position:relative;}");
         css = string.concat(
             css,
-            ".intro-section{min-height:100vh;min-height:100dvh;padding:4rem 2rem;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:680px;}"
+            ".intro-section{min-height:100vh;min-height:100dvh;padding:4rem 2rem;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:750px;}"
         );
         css = string.concat(
             css,
