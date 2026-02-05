@@ -110,7 +110,9 @@ library MediaPage {
             "function f(u){if(!u.startsWith('data:text/html;base64,'))return u;let h=b(u.slice(22));",
             "const r='<style>*{margin:0!important;padding:0!important;box-sizing:border-box!important}",
             "html,body{width:100%!important;height:100%!important;",
-            "overflow:hidden!important;justify-content:flex-start!important;align-items:flex-start!important}</style>';",
+            "overflow:hidden!important;justify-content:flex-start!important;align-items:flex-start!important}",
+            index == 8 ? "#container{align-items:start!important}#artwork{justify-content:start!important}" : "",
+            "</style>';",
             "h=h.includes('<head>')?h.replace('<head>','<head>'+r):h.includes('<html>')?h.replace('<html>','<html><head>'+r+'</head>'):r+h;",
             "return'data:text/html;base64,'+c(h)}",
             // Helper: Escape HTML (g)
