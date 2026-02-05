@@ -5,6 +5,7 @@ import { LibString } from "solady/utils/LibString.sol";
 import { Sculpture } from "../../Sculpture.sol";
 import { Essay } from "../../Essay.sol";
 import { Mod } from "../../Mod.sol";
+import "forge-std/console2.sol";
 
 /// @notice Renders essay pages with semantic HTML and sans-serif aesthetic
 library EssayPage {
@@ -12,6 +13,10 @@ library EssayPage {
         string memory showAddr = LibString.toHexStringChecksummed(show);
         Mod mod = Mod(data);
         Essay essay = Essay(essayContract);
+        string[] memory urls = essay.urls();
+        for (uint256 i = 0; i < urls.length; i++) {
+            console2.log(urls[i]);
+        }
         string memory showTitle = Sculpture(show).title();
 
         string memory body = string.concat(
