@@ -39,9 +39,9 @@ library EssayPage {
         );
 
         string memory description = string.concat(
-            'The essay "',
+            "The essay '",
             essay.title(),
-            '" written by ',
+            "' written by ",
             mod.essayAuthor(),
             " was published as part of the contract show: ",
             showTitle
