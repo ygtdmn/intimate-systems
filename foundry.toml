@@ -17,10 +17,7 @@ src = "src"
 test = "test"
 fs_permissions = [
   { access = "read", path = "./" },
-  { access = "read-write", path = "./output.html" },
   { access = "read-write", path = "./html_output" },
-  { access = "read-write", path = "./svgs" },
-  { access = "read-write", path = "./punks-svgs" },
 ]
 
 [profile.ci]

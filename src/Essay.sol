@@ -5,7 +5,6 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { SSTORE2 } from "solady/utils/SSTORE2.sol";
 import { Sculpture } from "./Sculpture.sol";
 
-/// @notice Essay contract for storing and rendering essay content on-chain
 contract Essay is Sculpture, Ownable {
     address private pointer1;
     address private pointer2;
@@ -87,4 +86,3 @@ contract Essay is Sculpture, Ownable {
         );
     }
 }
-

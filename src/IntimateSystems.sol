@@ -15,14 +15,9 @@ contract IntimateSystems is ContractShow {
 
     Mod public immutable data;
 
-    WebRenderer public immutable renderer;
+    WebRenderer public renderer;
 
-    constructor(
-        Sculpture[] memory _sculptures,
-        SculptureERC721[] memory _sculptureERC721s,
-        WebRenderer _renderer,
-        Mod _data
-    ) {
+    constructor(Sculpture[] memory _sculptures, SculptureERC721[] memory _sculptureERC721s, Mod _data) {
         sculptures = _sculptures;
 
         if (_sculptures.length != _sculptureERC721s.length) {
@@ -33,7 +28,6 @@ contract IntimateSystems is ContractShow {
             sculptureERC721s[_sculptures[i]] = _sculptureERC721s[i];
         }
 
-        renderer = _renderer;
         data = _data;
     }
 
@@ -118,11 +112,10 @@ contract IntimateSystems is ContractShow {
         return sculptureERC721s[sculpture];
     }
 
-    function setSculptures(Sculpture[] calldata _sculptures, SculptureERC721[] calldata _sculptureERC721s) public {
-        if (msg.sender != data.operator()) {
-            revert("No permission");
-        }
-
+    function setSculptures(
+        Sculpture[] calldata _sculptures,
+        SculptureERC721[] calldata _sculptureERC721s
+    ) public onlyOperator {
         if (_sculptures.length != _sculptureERC721s.length) {
             revert("Sculptures and sculpture tokens must have the same length");
         }
@@ -132,6 +125,17 @@ contract IntimateSystems is ContractShow {
         for (uint256 i = 0; i < _sculptures.length; i++) {
             sculptureERC721s[_sculptures[i]] = _sculptureERC721s[i];
         }
+    }
+
+    function setRenderer(WebRenderer _renderer) public onlyOperator {
+        renderer = _renderer;
+    }
+
+    modifier onlyOperator() {
+        if (msg.sender != data.operator()) {
+            revert("No permission");
+        }
+        _;
     }
 
     fallback() external {

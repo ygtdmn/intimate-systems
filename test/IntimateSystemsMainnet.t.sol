@@ -54,18 +54,9 @@ contract IntimateSystemsMainnetTest is Test {
             "<p>By tracing the subtle circulation of human signals through visible systems, the exhibition reveals the architectures of thought, reflection, and relation that thrive beneath the surface of digital networks.</p>"
         );
 
-        IntimateSystems show = new IntimateSystems(
-            sculptures,
-            sculptureERC721s,
-            WebRenderer(address(0)),
-            Mod(address(data))
-        );
+        IntimateSystems show = new IntimateSystems(sculptures, sculptureERC721s, Mod(address(data)));
         WebRenderer renderer = new WebRenderer(address(show), address(essay), address(data));
-
-        // Make contracts persistent so they work across fork switches
-        vm.makePersistent(address(show));
-        vm.makePersistent(address(renderer));
-        vm.makePersistent(address(data));
+        show.setRenderer(renderer);
 
         vm.createDir("html_output", true);
         vm.createDir("html_output/sculpture-media", true);
