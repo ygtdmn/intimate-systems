@@ -6,6 +6,7 @@
     "@types/keccak": "^3.0.5",
     "forge-std": "github:foundry-rs/forge-std#v1.12.0",
     "keccak": "^3.0.4",
+    "marked": "^15.0.0",
     "pngjs": "^7.0.0",
     "prettier": "^3.6.2",
     "sharp": "^0.34.5",
@@ -24,6 +25,7 @@
     "test:coverage:report": "forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir coverage",
     "generate:image": "bun run ts-scripts/generate-image.ts",
     "generate:contract": "bun run ts-scripts/generate-push4-contract.ts",
-    "verify:selectors": "bun run ts-scripts/verify-selectors.ts"
+    "verify:selectors": "bun run ts-scripts/verify-selectors.ts",
+    "essay:build": "bun run essay/build.mjs"
   }
 }

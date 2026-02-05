@@ -44,3 +44,4 @@ wrap_comments = true
 [rpc_endpoints]
 localhost = "http://localhost:8545"
 mainnet = "${RPC_URL}"
+sepolia = "${RPC_URL_SEPOLIA}"

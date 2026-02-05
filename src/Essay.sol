@@ -5,7 +5,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { SSTORE2 } from "solady/utils/SSTORE2.sol";
 import { Sculpture } from "./Sculpture.sol";
 
-// TODO
+/// @notice Essay contract for storing and rendering essay content on-chain
 contract Essay is Sculpture, Ownable {
     address private pointer1;
     address private pointer2;
@@ -63,24 +63,28 @@ contract Essay is Sculpture, Ownable {
         pointer2 = SSTORE2.write(bytes(_text));
     }
 
+    /// @notice Returns the full HTML representation of the essay
     function html() external view returns (string memory _html) {
+        string memory essayContent = pointer1 == address(0)
+            ? ""
+            : string.concat(
+                string(SSTORE2.read(pointer1)),
+                pointer2 == address(0) ? "" : string(SSTORE2.read(pointer2))
+            );
+
         _html = string.concat(
+            "<header>",
             "<h1>",
             t,
             "</h1>",
-            "<br><br><br>",
-            "<h2><i>Written by ",
+            "<address><i>Written by ",
             authors()[0],
-            "</i></h2>",
-            "<br><br>",
-            "<div>",
-            pointer1 == address(0)
-                ? ""
-                : string.concat(
-                    string(SSTORE2.read(pointer1)),
-                    pointer2 == address(0) ? "" : string(SSTORE2.read(pointer2))
-                ),
-            "</div>"
+            "</i></address>",
+            "</header>",
+            "<section>",
+            essayContent,
+            "</section>"
         );
     }
 }
+
