@@ -24,6 +24,7 @@ library Layout {
                 "<head>"
                 '<meta charset="UTF-8">'
                 '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+                '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0NTkiIGhlaWdodD0iNDU5IiB2aWV3Qm94PSIwIDAgNDU5IDQ1OSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGg0NTl2NDU5SDB6Ii8+PHBhdGggZmlsbD0iIzExMSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiBkPSJNMTYwIDY4aDkydjMyMmgtOTJ6Ii8+PHBhdGggZmlsbD0iI2NjYyIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiBkPSJNMjYzIDkxaDM1djI5OWgtMzV6Ii8+PC9zdmc+">'
                 "<title>",
                 title,
                 "</title>"
