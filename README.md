@@ -41,6 +41,12 @@ Open:
 
 - Media iframes resolve from `/sculpture-media/{index}` on-chain; the fork test mirrors those paths under `html_output/sculpture-media/{index}/index.html`.
 
+## Deployments
+
+- **Mod.sol**: [`0xD54BFaFa2312C0FC5b54c97141F9804aba4a753E`](https://etherscan.io/address/0xD54BFaFa2312C0FC5b54c97141F9804aba4a753E)
+- **IntimateSystems.sol**: [`0xaC26CadCF2e5d45b1fFbD62F8AbF98e166BFFA52`](https://etherscan.io/address/0xaC26CadCF2e5d45b1fFbD62F8AbF98e166BFFA52)
+- **WebRenderer.sol**: [`0x1745FEd944c387C9Bfe3a487598F36f98721331a`](https://etherscan.io/address/0x1745FEd944c387C9Bfe3a487598F36f98721331a)
+
 ## Credits
 
 - Intimate Systems curated by [Jonooo](https://x.com/im_jonooo) with [SuperRare](https://superrare.com/curation/exhibitions/intimate-systems)

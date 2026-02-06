@@ -11,10 +11,11 @@ import "../src/web/pages/MediaPage.sol";
 import "../src/Sculpture.sol";
 
 contract DeploySculptures is Script {
-    function run() public returns (Mod data, Essay essay, IntimateSystems show, WebRenderer renderer) {
-        vm.startBroadcast();
+    function run() public returns (Mod data, IntimateSystems show, WebRenderer renderer) {
+        uint256 privateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(privateKey);
         data = new Mod();
-        essay = Essay(0xED8a167940b693472245Ea8aA707AfE721C70Bd9);
+        Essay essay = Essay(0xED8a167940b693472245Ea8aA707AfE721C70Bd9);
 
         Sculpture[] memory sculptures = new Sculpture[](9);
         sculptures[0] = Sculpture(0x82752f2626AC2FBF2A8b7781a1c20cbcab2E0196);
