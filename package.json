@@ -26,7 +26,8 @@
     "generate:image": "bun run ts-scripts/generate-image.ts",
     "generate:contract": "bun run ts-scripts/generate-push4-contract.ts",
     "verify:selectors": "bun run ts-scripts/verify-selectors.ts",
-    "essay:build": "bun run essay/build.mjs"
+    "essay:build": "bun run essay/build.mjs",
+    "w3name:deploy": "bun w3name-deploy.mjs"
   },
   "dependencies": {
     "w3name": "^1.1.3"

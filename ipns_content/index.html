@@ -48,6 +48,10 @@
         <script>
             callIndex()
                 .then(function (html) {
+                    html = html.replace(
+                        /A contract show curated by (<a[^>]*>Jonooo<\/a>) with (<a[^>]*>SuperRare<\/a>)/,
+                        'A contract show with $2, curated by $1'
+                    );
                     var l = document.getElementById('loading');
                     if (l) l.remove();
                     document.open();
