@@ -27,5 +27,8 @@
     "generate:contract": "bun run ts-scripts/generate-push4-contract.ts",
     "verify:selectors": "bun run ts-scripts/verify-selectors.ts",
     "essay:build": "bun run essay/build.mjs"
+  },
+  "dependencies": {
+    "w3name": "^1.1.3"
   }
 }

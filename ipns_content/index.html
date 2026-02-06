@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmwiIHdpZHRoPSI0NTkiIGhlaWdodD0iNDU5IiB2aWV3Qm94PSIwIDAgNDU5IDQ1OSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGg0NTl2NDU5SDB6Ii8+PHBhdGggZmlsbD0iIzExMSIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiBkPSJNMTYwIDY4aDkydjMyMmgtOTJ6Ii8+PHBhdGggZmlsbD0iI2NjYyIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIiBkPSJNMjYzIDkxaDM1djI5OWgtMzV6Ii8+PC9zdmc+"
+        />
+        <title>Intimate Systems</title>
+        <meta
+            name="description"
+            content="A contract show exploring the quiet, interior spaces within networks designed for visibility."
+        />
+        <style>
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                background: #fff;
+            }
+            #loading {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                font-family: monospace;
+                color: #999;
+                font-size: 0.9rem;
+            }
+            .error {
+                color: #c33;
+                text-align: center;
+                padding: 2em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="loading">gathering intimate systems…</div>
+        <script src="/rpc.js"></script>
+        <script>
+            callIndex()
+                .then(function (html) {
+                    var l = document.getElementById('loading');
+                    if (l) l.remove();
+                    document.open();
+                    document.write(html);
+                    document.close();
+                })
+                .catch(function (err) {
+                    document.body.innerHTML =
+                        '<div class="error">' +
+                        err.message +
+                        '<br><br><small style="opacity:0.6">Try refreshing or check your network connection.</small></div>';
+                });
+        </script>
+    </body>
+</html>
